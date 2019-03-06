@@ -1,26 +1,45 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
+const fs = require('fs')
+
+let ultima = Date.now()
 
 bot.login(process.env.TOKEN);
 
 bot.on('message', async message => {
   //------------ linha da manutenção meu pau na tua mão ------------------
-  if (message.channel.id !== '552934092514263050') return
+  // if (message.channel.id !== '552934092514263050') return
   
   //ranni num pode usa kkkkkkk
   //if(message.author.id === '332918506930831362') return
   
   //comando do ranni
   if (message.content.toLowerCase().startsWith('!ranni')) {
+    const allowed = ['471813032981561344']
+    if (!allowed.includes(message.channel.id)) return
     const messages = ['burro']
     
     message.channel.send(messages[Math.floor(Math.random()*messages.length)])
   }
   
   //emoji comunismo
-  if (message.content.toLowerCase().startsWith('!comunismo')) {    
+  if (message.content.toLowerCase().startsWith('!comunismo')) {
+    const allowed = ['471813032981561344']
+    if (!allowed.includes(message.channel.id)) return
     message.channel.send('<a:comunismo:537643379673137152>')
     message.delete()
+  }
+
+  // contagem de namoradas do ranni
+  if (message.content.toLowerCase().startsWith('!umanamorada')) {
+    const allowed = ['471813032981561344']
+    if (!allowed.includes(message.channel.id)) return
+    const ranni = require('./ranni.json')
+    ranni.namoradas = ranni.namoradas + 1
+    fs.writeFileSync('./ranni.json', JSON.stringify(ranni), 'utf8')
+    if (Date.now() < ultima + 2000) return
+    ultima = Date.now()
+    message.channel.send(`Agora <@332918506930831362> tem **${ranni.namoradas}** namoradas 😎👍`)
   }
   
   //comando falar
@@ -100,3 +119,16 @@ bot.on('message', async message => {
   }
 
 });
+
+bot.on('ready', () => {
+  // PLAYING
+  // STREAMING
+  // LISTENING
+  // WATCHING
+  
+  const presence = JSON.parse(process.env.PRESENCES)
+  setInterval(() => {
+    bot.user.setPresence({ status: 'online', game: presence[Math.floor(Math.random()*presence.length)] })
+  }, 30000)
+  bot.user.setPresence({ status: 'online', game: presence[Math.floor(Math.random()*presence.length)] })
+})
